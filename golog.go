@@ -8,6 +8,7 @@ import (
 	"github.com/mgutz/ansi"
 	"log"
 	"os"
+	"time"
 )
 
 var loggerInfo = log.New(os.Stderr, "INFO: ", log.Lshortfile)
@@ -29,21 +30,25 @@ func Info(message string, v ...interface{}) {
 	}
 }
 
-func Trace(message string, v ...interface{}) string {
+func Trace(message string, v ...interface{}) (string, time.Time) {
+	start := time.Now()
 	magenta := ansi.ColorFunc("magenta+b")
 	filename, line, funcname := goutils.GetCaller(3)
 	output := magenta(fmt.Sprintf("Function: %s, Message: %s", funcname, fmt.Sprintf(message, v...)))
-	err := loggerTrace.Output(2, fmt.Sprintf("[%s], +ENTERING %s", goutils.GetTimeStamp(), output))
+	err := loggerTrace.Output(2, fmt.Sprintf("[%s], >ENTERING %s", goutils.GetTimeStamp(), output))
 	if err != nil {
 		log.Fatalln(fmt.Sprintf(
 			"[%s], Function: %s, File: %s:%d",
 			"ERROR trying to output Trace(message) to stderr console !", funcname, filename, line))
 	}
-	return output
+	return output, start
 }
 
-func Un(message string) {
-	err := loggerTrace.Output(2, fmt.Sprintf("[%s], +EXITING  %s", goutils.GetTimeStamp(), message))
+// to be used with Trace like this at the begining of a function
+// defer golog.Un(golog.Trace("your function message"))
+func Un(message string, start time.Time) {
+	elapsed := time.Since(start)
+	err := loggerTrace.Output(2, fmt.Sprintf("[%s], <EXITING  %s (after %s)", goutils.GetTimeStamp(), message, elapsed))
 	if err != nil {
 		log.Fatalln("ERROR trying to output UnTrace(message) to stderr console !")
 	}
