@@ -44,8 +44,8 @@ func Trace(message string, v ...interface{}) (string, time.Time) {
 	return output, start
 }
 
-// to be used with Trace like this at the begining of a function
-// defer golog.Un(golog.Trace("your function message"))
+// to be used with Trace like this at the begining of the body of a function
+// USAGE : defer golog.Un(golog.Trace("your function message"))
 func Un(message string, start time.Time) {
 	elapsed := time.Since(start)
 	err := loggerTrace.Output(2, fmt.Sprintf("[%s], <EXITING  %s (after %s)", goutils.GetTimeStamp(), message, elapsed))
