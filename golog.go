@@ -94,7 +94,7 @@ func Un(message string, start time.Time) {
 func Warn(message string, v ...interface{}) {
 	yellow := ansi.ColorFunc("yellow+b")
 	filename, line, funcname := GetCaller(3)
-	err := loggerTrace.Output(2,
+	err := loggerWarning.Output(2,
 		yellow(fmt.Sprintf(
 			"[%s], Function: %s, Message: %s",
 			GetTimeStamp(), funcname, fmt.Sprintf(message, v...))))
