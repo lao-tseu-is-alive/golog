@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-var loggerInfo = log.New(os.Stderr, "INFO: ", log.Lshortfile)
-var loggerTrace = log.New(os.Stderr, "TRACE: ", log.Lshortfile)
-var loggerWarning = log.New(os.Stderr, "WARNING: ", log.Lshortfile)
-var loggerError = log.New(os.Stderr, "ERROR: ", log.Lshortfile)
+var loggerInfo 		= log.New(os.Stderr, "INFO:   ", log.Lshortfile)
+var loggerTrace 	= log.New(os.Stderr, "TRACE:  ", log.Lshortfile)
+var loggerWarning 	= log.New(os.Stderr, "WARNING:", log.Lshortfile)
+var loggerError 	= log.New(os.Stderr, "ERROR:  ", log.Lshortfile)
 
 func GetCaller(skip int) (file string, line int, function string) {
 	pc := make([]uintptr, 15)
@@ -121,6 +121,16 @@ func Err(message string, v ...interface{}) {
 
 // Fatalf is equivalent to Err() followed by a call to os.Exit(1).
 func Fatal(message string, v ...interface{}) {
-	Err(message, v...)
+	red := ansi.ColorFunc("red+b:white+h")
+	filename, line, funcname := GetCaller(3)
+	err := loggerError.Output(2,
+		red(fmt.Sprintf(
+			"[%s], Function: %s, Message: %s",
+			GetTimeStamp(), funcname, fmt.Sprintf(message, v...))))
+	if err != nil {
+		log.Fatalln(fmt.Sprintf(
+			"[%s], Function: %s, File: %s:%d",
+			"ERROR trying to output Err(message) to stderr console !", funcname, filename, line))
+	}
 	os.Exit(1)
 }
