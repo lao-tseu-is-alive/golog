@@ -118,3 +118,9 @@ func Err(message string, v ...interface{}) {
 			"ERROR trying to output Err(message) to stderr console !", funcname, filename, line))
 	}
 }
+
+// Fatalf is equivalent to Err() followed by a call to os.Exit(1).
+func Fatal(message string, v ...interface{}) {
+	Err(message, v...)
+	os.Exit(1)
+}
